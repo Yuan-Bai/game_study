@@ -44,7 +44,7 @@ class Tree(Generic):
         self.apple_pos = APPLE_POS[name]
         self.apple_sprites = pygame.sprite.Group()
 
-        self.health = 4
+        self.health = 3 if name == "Small" else 4
         self.is_alive = Tree
         self.stump_surf = pygame.image.load(f'resources/graphics/objects/stump_{"small" if name == "Small" else "medium"}.png')
 
