@@ -6,8 +6,8 @@ from timer import Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, collision_sprites, *groups: AbstractGroup):
-        super().__init__(*groups)
+    def __init__(self, pos, *groups: AbstractGroup):
+        super().__init__(*groups[:-2])
         # 动画
         self.animations = dict()
         self.import_assets()
@@ -17,7 +17,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
         self.hitbox = self.rect.copy().inflate(-126, -70)
-        self.collision_sprites = collision_sprites
+        self.collision_sprites = groups[2]
+        self.tree_sprites = groups[1]
         self.z = LAYERS['main']
 
         # 移动
@@ -87,12 +88,23 @@ class Player(pygame.sprite.Sprite):
         if self.timers['tool_use'].active:
             self.status = self.status.split('_')[0] + '_' + self.selected_tool
 
+    def get_target_pos(self):
+        self.target_pos = self.rect.center + PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
+
     def use_tool(self):
-        pass
+        if self.selected_tool == 'hoe':
+            pass
+        elif self.selected_tool == 'axe':
+            for tree in self.tree_sprites.sprites():
+                if tree.rect.collidepoint(self.target_pos):
+                    tree.damage()
+        elif self.selected_tool == 'water':
+            pass
 
     def collision(self, direction):
         for sprite in self.collision_sprites.sprites():
             if hasattr(sprite, 'hitbox'):
+
                 if sprite.hitbox.colliderect(self.hitbox):
                     if direction == 'horizontal':
                         if self.direction.x > 0:
@@ -134,6 +146,7 @@ class Player(pygame.sprite.Sprite):
             timer.update()
 
     def update(self, dt) -> None:
+        self.get_target_pos()
         self.input()
         self.timer_update()
         self.get_status()
