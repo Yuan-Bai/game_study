@@ -34,8 +34,14 @@ class Player(pygame.sprite.Sprite):
 
         # 工具
         self.tools = ['axe', 'hoe', 'water']
+        self.goods = ['corn', 'tomato', 'apple']
         self.tool_index = 0
         self.selected_tool = 'axe'
+        self.selected_good = 'apple'
+        self.pack = {
+            'corn':   0,
+            'tomato': 0,
+            'apple':  0}
 
     def import_assets(self):
         self.animations = {'up': [], 'down': [], 'left': [], 'right': [],

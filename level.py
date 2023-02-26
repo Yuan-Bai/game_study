@@ -24,6 +24,10 @@ class Level:
                 LAYERS['ground'],
                 self.all_sprites)
         tmx_data = load_pygame(r'resources/data/map.tmx')
+        # 玩家
+        for obj in tmx_data.get_layer_by_name('Player'):
+            if obj.name == 'Start':
+                self.player = Player((obj.x, obj.y), self.all_sprites, self.tree_sprites, self.collision_sprites)
         # 房子
         for layer in ['HouseFloor', 'HouseFurnitureBottom']:
             for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
@@ -33,7 +37,7 @@ class Level:
                 Generic((x * TILE_SIZE, y * TILE_SIZE), surf, LAYERS['main'], *(self.all_sprites, self.collision_sprites))
         # 树
         for obj in tmx_data.get_layer_by_name('Trees'):
-            Tree((obj.x, obj.y), obj.image, LAYERS['main'], obj.name, *(self.all_sprites, self.collision_sprites, self.tree_sprites))
+            Tree((obj.x, obj.y), obj.image, LAYERS['main'], obj.name, self.player.pack, *(self.all_sprites, self.collision_sprites, self.tree_sprites))
         # 花
         for obj in tmx_data.get_layer_by_name('Decoration'):
             WildFlower((obj.x, obj.y), obj.image, LAYERS['main'], *(self.all_sprites, self.collision_sprites))
@@ -44,10 +48,6 @@ class Level:
         # collision tiles
         for x, y, _ in tmx_data.get_layer_by_name('Collision').tiles():
             Generic((x*TILE_SIZE, y*TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), LAYERS['main'], self.collision_sprites)
-        # 玩家
-        for obj in tmx_data.get_layer_by_name('Player'):
-            if obj.name == 'Start':
-                self.player = Player((obj.x, obj.y), self.all_sprites, self.tree_sprites, self.collision_sprites)
 
     def run(self, dt):
         self.display_surface.fill('black')
@@ -72,8 +72,8 @@ class CameraGroup(pygame.sprite.Group):
                     offset_rect.center -= self.offset
                     self.display_surface.blit(sprite.image, offset_rect)
 
-                # if sprite.z == LAYERS['main']:
-                #     hitbox_rect = sprite.hitbox.copy()
-                #     hitbox_rect.center -= self.offset
-                #     pygame.draw.rect(self.display_surface, 'red', offset_rect, 5)
-                #     pygame.draw.rect(self.display_surface, 'green', hitbox_rect, 5)
+                    # if sprite.z == LAYERS['main']:
+                    #     hitbox_rect = sprite.hitbox.copy()
+                    #     hitbox_rect.center -= self.offset
+                    #     pygame.draw.rect(self.display_surface, 'red', offset_rect, 5)
+                    #     pygame.draw.rect(self.display_surface, 'green', hitbox_rect, 5)
