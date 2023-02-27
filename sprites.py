@@ -45,7 +45,8 @@ class Tree(Generic):
         self.apple_sprites = pygame.sprite.Group()
         self.player_pack = player_pack
 
-        self.health = 3 if name == "Small" else 4
+        self.name = name
+        self.health = 3 if self.name == "Small" else 4
         self.is_alive = Tree
         self.stump_surf = pygame.image.load(f'resources/graphics/objects/stump_{"small" if name == "Small" else "medium"}.png')
 
@@ -58,6 +59,7 @@ class Tree(Generic):
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
             self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.7, -self.rect.height * 0.75)
             self.is_alive = False
+            self.player_pack['wood'] += 3 if self.name == "Small" else 4
         elif self.health > 0:
             self.health -= 1
             if len(self.apple_sprites) > 0:
@@ -90,8 +92,8 @@ class Particle(Generic):
             self.kill()
 
 
-class Pack(Generic):
-    def __init__(self, pos, surf, z, *groups: AbstractGroup):
-        super().__init__(pos, surf, z, *groups)
-        pass
+# class Pack(Generic):
+#     def __init__(self, pos, surf, z, *groups: AbstractGroup):
+#         super().__init__(pos, surf, z, *groups)
+#         pass
 

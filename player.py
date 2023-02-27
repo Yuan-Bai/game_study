@@ -6,7 +6,7 @@ from timer import Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, *groups: AbstractGroup):
+    def __init__(self, pos, toggle_menu, *groups: AbstractGroup):
         super().__init__(*groups[:-2])
         # 动画
         self.animations = dict()
@@ -29,19 +29,22 @@ class Player(pygame.sprite.Sprite):
         # 定时器
         self.timers = {
             'tool_use': Timer(350, self.use_tool),
-            'tool_switch': Timer(200)
+            'tool_switch': Timer(200),
+            'toggle_menu': Timer(200)
         }
 
         # 工具
+        self.toggle_menu = toggle_menu
         self.tools = ['axe', 'hoe', 'water']
-        self.goods = ['corn', 'tomato', 'apple']
+        self.goods = ['corn', 'tomato', 'apple', 'wood']
         self.tool_index = 0
         self.selected_tool = 'axe'
         self.selected_good = 'apple'
         self.pack = {
             'corn':   0,
             'tomato': 0,
-            'apple':  0}
+            'apple':  0,
+            'wood': 0}
 
     def import_assets(self):
         self.animations = {'up': [], 'down': [], 'left': [], 'right': [],
@@ -56,6 +59,11 @@ class Player(pygame.sprite.Sprite):
 
     def input(self):
         keys = pygame.key.get_pressed()
+
+        if not self.timers['toggle_menu'].active:
+            if keys[pygame.K_TAB]:
+                self.toggle_menu()
+                self.timers['toggle_menu'].activate()
 
         if not self.timers['tool_use'].active:
             if keys[pygame.K_w]:

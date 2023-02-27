@@ -5,6 +5,7 @@ from overlay import Overlay
 from sprites import Generic, Water, Tree, WildFlower
 from pytmx.util_pygame import load_pygame
 from support import import_folder
+from menu import Pack
 
 
 class Level:
@@ -14,8 +15,10 @@ class Level:
         self.collision_sprites = pygame.sprite.Group()
         self.tree_sprites = pygame.sprite.Group()
         self.player = None
+        self.toggle = True
         self.setup()
         self.overlay = Overlay(self.player)
+        self.pack = Pack(self.player, self.toggle_menu)
 
     def setup(self):
         # 世界
@@ -27,7 +30,7 @@ class Level:
         # 玩家
         for obj in tmx_data.get_layer_by_name('Player'):
             if obj.name == 'Start':
-                self.player = Player((obj.x, obj.y), self.all_sprites, self.tree_sprites, self.collision_sprites)
+                self.player = Player((obj.x, obj.y), self.toggle_menu, self.all_sprites, self.tree_sprites, self.collision_sprites)
         # 房子
         for layer in ['HouseFloor', 'HouseFurnitureBottom']:
             for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
@@ -49,11 +52,17 @@ class Level:
         for x, y, _ in tmx_data.get_layer_by_name('Collision').tiles():
             Generic((x*TILE_SIZE, y*TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), LAYERS['main'], self.collision_sprites)
 
+    def toggle_menu(self):
+        self.toggle = not self.toggle
+
     def run(self, dt):
         self.display_surface.fill('black')
         self.all_sprites.customize_draw(self.player)
-        self.all_sprites.update(dt)
-        self.overlay.display()
+        if self.toggle:
+            self.all_sprites.update(dt)
+            self.overlay.display()
+        else:
+            self.pack.update()
 
 
 class CameraGroup(pygame.sprite.Group):
